@@ -2,9 +2,14 @@ package com.ohgiraffers.assertions;
 
 import com.ohgifatters.assertions.section01.jupiter.Calculator;
 import com.ohgifatters.assertions.section01.jupiter.Person;
+import com.ohgifatters.assertions.section02.assertj.Member;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class JupiterAssertionsTests {
 
@@ -159,7 +164,59 @@ public class JupiterAssertionsTests {
                 () -> Assertions.assertEquals("길길", person.getFirstName(), () -> "firstName이 잘못됨."),
                 () -> Assertions.assertEquals(lastName, person.getLastName(), () -> "lastName이 잘못됨.")
         );
-
-
     }
+
+    /* 목차. 8. 객체 프로퍼티 추출 하기 */
+    /* 필기.
+        객체의 특정 프로퍼티를 추출하여 List를 이용한 검증을 할 수 있다.
+        property를 확인하는 것은 getter 메소드가 필요하지 않다. */
+    @Test
+    @DisplayName("프로퍼티 추출 테스트하기")
+    void testExtractProperty() {
+
+        //given
+        Member member1 = new Member(1, "user01", "홍길동", 20);
+        Member member2 = new Member(2, "user02", "유관순", 16);
+        Member member3 = new Member(3, "user03", "이순신", 40);
+        Member member4 = new Member(4, "user04", "신사임당", 43);
+        Member member5 = new Member(5, "user05", "임꺽정", 19);
+
+        List<String> excpected = Arrays.asList("홍길동", "유관순", "이순신", "신사임당","임꺽정");
+
+        //when
+        List<Member> members = Arrays.asList(member1, member2, member3, member4, member5);
+
+        //then
+        //위에서 사용한 Assertions 과 다른 Assertions 사용해야하는데 이름이 같아서 경로를 지정해줘야 원하는 것 사용 가능
+        org.assertj.core.api.Assertions.assertThat(members)
+                .extracting("name", String.class)//members 안의 이름이라는 필드 추출해서 내용들이 String 값으로 되어 있는지 테스트
+                .containsAll(excpected);
+    }
+
+
+    /* 목차. 9. 객체의 프로퍼티를 여러 개 튜플로 추출하기 */
+    /* 필기. 객체의 여러 프로퍼티들을 추출하여 튜플로 생성하고, 튜플을 이용하여 검증할 수 있는 기능을 제공 */
+    @Test
+    @DisplayName("튜플로 추출하여 테스트하기")
+    void testExtractPropertyTuple() {
+
+        //given
+        Member member1 = new Member(1, "user01", "홍길동", 20);
+        Member member2 = new Member(2, "user02", "유관순", 16);
+        Member member3 = new Member(3, "user03", "이순신", 40);
+        Member member4 = new Member(4, "user04", "신사임당", 43);
+        Member member5 = new Member(5, "user05", "임꺽정", 19);
+
+        //when
+        List<Member> members = Arrays.asList(member1, member2, member3, member4, member5);
+
+        //then
+        org.assertj.core.api.Assertions.assertThat(members)
+                .extracting("name", "age")
+                .contains(
+                        Tuple.tuple("홍길동", 20),
+                        Tuple.tuple("유관순", 16)//튜플 값이 일치하지 않으면 테스트 검증x
+                );
+    }
+
 }
